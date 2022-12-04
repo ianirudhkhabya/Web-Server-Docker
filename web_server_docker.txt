@@ -1,0 +1,123 @@
+1) Create EC2 instance 
+	AMI --> Amazon Linux
+	Security Group --> Open port 22, 8080 with (0.0.0.0/0)
+	Launch Instance
+
+2) Login EC2 instance
+	ssh -i key_pair_name.pem ec2-user@public-ip-of-instance
+
+3) Run Commands:
+	sudo su
+	yum update -y
+	yum install docker -y
+	systemctl enable docker 
+	service docker start
+	service docker start (output should Running in green)
+
+4) Create Dockerfile
+
+
+Commands: 
+	vi Dockerfile(paste below 2 lines of code in it)
+
+	FROM httpd:2.4
+	COPY ./website/ /usr/local/apache2/htdocs/
+
+5) Web Code:
+
+	a) Create folder website in home directory
+		mkdir website
+
+	b) Create a file index.html in the website directory (paste below code in it)
+
+	<html>
+		<head>
+    			<title>Check IN</title>
+		</head>
+		<body>
+    			<h1>Connect with me <a href="https://www.linkedin.com/in/ianirudhkhabya/">
+        		<img width="30px" src="https://www.vectorlogo.zone/logos/linkedin/linkedin-icon.svg" />
+      			</a></h1>
+		</body>
+	</html>
+
+
+	go to previous directoy
+	Command: cd ..
+
+6) Build Images from Dockerfile
+
+	fire below command to build image from dockerfile [dockerfile---(build)---> image ---(run)---> container ]
+	
+	Command: (docker build -t my-webserver-image .)
+
+	Check whether image created or not
+	Command: (docker images)
+
+7) Run Container from image:
+
+	run container
+	Command: (docker run -d --name my-webserver-container -p 8080:80 my-webserver-image)
+
+	docker run -d(detached mode in background) (container name) -p (map port of ec2 instance with port of docker container) ec2port:container_port image_name
+
+	check container is running or not:
+
+	Command: docker ps
+
+8) Access Web Page
+
+	copy public ip of instance from aws
+
+	paste in browser with port 8080
+
+	eg: 192.168.10.10:8080
+
+
+
+========================================================================================
+
+
+All Steps after logged in into ec2 instance:
+
+	sudo su
+	yum update -y
+	yum install docker -y
+	systemctl enable docker 
+	service docker start
+	service docker start
+	service docker status 
+------------------------------------------
+	vi Dockerfile
+
+	FROM httpd:2.4
+	COPY ./website/ /usr/local/apache2/htdocs/
+
+---------------------------------------
+	mkdir website
+	cd website
+
+	vi index.html
+
+	<html>
+		<head>
+    			<title>Check IN</title>
+		</head>
+		<body>
+    			<h1>Connect with me <a href="https://www.linkedin.com/in/ianirudhkhabya/">
+        		<img width="30px" src="https://www.vectorlogo.zone/logos/linkedin/linkedin-icon.svg" />
+      			</a></h1>
+		</body>
+	</html>
+
+----------------------------------------------------------
+cd ..
+docker build -t my-webserver-image .
+docker images
+docker run -d --name my-webserver-container -p 8080:80 my-webserver-image
+docker ps
+
+---------------------------------------------------------
+
+In webbrowser
+192.168.10.10:8080
